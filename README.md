@@ -1,66 +1,113 @@
-# 🎰 Casino Challenge — Multi-Armed Bandits & ε-Greedy (Gamified Workshop)
+Assignment 3 – Deep Q-Learning on Pong
 
-## 📘 Overview
-This workshop introduces **exploration–exploitation trade-offs** in **Reinforcement Learning** through a gamified **Multi-Armed Bandit (MAB)** challenge.  
-Students will implement ε-greedy policies, compete for the highest rewards, and analyze their strategies in both stationary and non-stationary environments.
+Course: CSCN8020 – Reinforcement Learning Programming
+Student: Preetpal Singh
 
----
+This project implements a Deep Q-Network (DQN) to play the Atari game PongDeterministic-v4, including frame preprocessing, replay buffer, target network, epsilon-greedy exploration, and hyperparameter experiments.
 
-## 🧠 Learning Objectives
-By completing this workshop, students will be able to:
-- Explain the **exploration vs. exploitation dilemma**.
-- Implement **ε-greedy** and **decaying ε-greedy** algorithms.
-- Compare the effects of different ε values on performance.
-- Adapt policies for **non-stationary bandits** using constant step-size (α).
-- Reflect critically on their strategies and outcomes.
+Project Overview
 
----
+This assignment demonstrates:
 
-## 🏗️ Workshop Structure
+Implementing a DQN with convolutional layers
 
-| Phase | Activity | Description |
-|-------|-----------|-------------|
-| 1 | **Setup & Introduction** | Review MAB concepts and workshop goals. |
-| 2 | **Round 1 – Stationary Casino** | Students compete using ε-greedy strategies. |
-| 3 | **Leaderboard & Reflection** | Submit scores, compare results, and discuss strategies. |
-| 4 | **Round 2 – Non-Stationary Casino** | Adapt to drifting reward probabilities using constant α. |
-| 5 | **Final Discussion** | Relate bandit learning to real-world systems (A/B testing, ads, recommendations). |
+Preprocessing Atari frames (crop → downsample → grayscale → normalize)
 
----
+Building and sampling from a replay buffer
 
-## 🎮 Gamified Components
-- **Leaderboards:** Students submit results to CSV files (`submissions_round1.csv`, `submissions_round2.csv`) and view rankings.
-- **Badges / Awards:**
-  - 🥇 *Efficient Exploiter* — Highest reward with low ε.
-  - 🧭 *Risk Taker* — High ε with competitive performance.
-  - 🔄 *Adaptive Strategist* — Best performance in non-stationary round.
-- **Reflection Prompts:** Encourage analysis of exploration behavior and real-world parallels.
+Using a target network for stable training
 
----
+Experimenting with hyperparameters:
 
-## 💻 Technical Notes
-- Works in **Jupyter Notebook** or **Google Colab**.
-- Dependencies: `numpy`, `matplotlib`, `pandas`, `IPython.display`
-- Each student runs locally; the instructor collects leaderboard CSVs for aggregation.
+Batch size (8 vs 16)
 
----
+Target update frequency (10 vs 3 episodes)
 
-## 🧩 Files Included
-| File | Description |
-|------|--------------|
-| `Casino_Challenge_MAB_Workshop.ipynb` | Main notebook with competition, code, and reflection prompts. |
-| `README.md` | This summary document. |
+Deep Q-Network Architecture
 
----
+The DQN processes 4 stacked grayscale frames:
 
-## 🧭 Instructor Tips
-- Keep the same random seed (`SEED_ENV`) for fairness.
-- Hide true means during competition.
-- Encourage students to explain *why* their chosen ε performed as it did.
-- Optionally extend to **UCB** or **Thompson Sampling**.
+Input shape: (4, 80, 80)
 
----
 
-## 🧾 License
-For educational use in academic settings.  
-Developed with support from OpenAI’s ChatGPT (GPT‑5) as part of CSCN8020 Machine Learning Education Tools.
+Convolutional layers:
+
+Layer	Channels	Kernel	Stride	Output Purpose
+Conv1	4 → 32	8×8	4	Coarse spatial features
+Conv2	32 → 64	4×4	2	Mid-level features
+Conv3	64 → 64	3×3	1	Fine motion patterns
+
+Fully connected layers:
+
+Flatten → 2688 units
+
+FC1 → 512
+
+FC2 → 6 (legal Pong actions)
+
+Other components:
+
+Optimizer: Adam (1e-4)
+
+Loss: MSE
+
+Discount factor: γ = 0.95
+
+Replay buffer: 50,000 transitions
+
+Target network sync: every N episodes
+
+Experiments Conducted
+Experiment A – Baseline
+
+Batch size: 8
+
+Target update: 10
+
+Experiment B – Batch Size Effect
+
+Batch size: 16
+
+Target update: 10
+
+Experiment C – Target Update Frequency
+
+Batch size: 8
+
+Target update: 3
+
+Each experiment recorded:
+
+Episode rewards
+
+Moving average rewards (window=5)
+
+Training stability
+
+Convergence behavior
+
+Plots were generated for each experiment.
+
+Key Results
+Batch Size = 16
+
+✔ More stable gradients
+✔ Faster reward improvement
+✔ Best moving-average performance
+
+Target Update = 3
+
+Frequent target updates → unstable learning
+Oscillations and inconsistent reward trends
+
+Baseline (8, 10)
+
+✔ Moderate stability
+✔ Slow but steady improvements
+
+Best Performing Configuration
+
+Batch size: 16
+Target update: 10
+
+This produced the smoothest learning curve and highest moving-average reward.
